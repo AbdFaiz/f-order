@@ -4,7 +4,6 @@ namespace Database\Seeders;
 
 use App\Models\Role;
 use App\Models\User;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 
@@ -15,8 +14,7 @@ class UserRoleSeeder extends Seeder
      */
     public function run(): void
     {
-        // Role
-        $roles = [
+        $rolesData = [
             ['code' => 'adm', 'name' => 'admin', 'description' => 'Administrator Website'],
             ['code' => 'wt', 'name' => 'waitress', 'description' => 'Waitress'],
             ['code' => 'chf', 'name' => 'chef', 'description' => 'Chef'],
@@ -24,30 +22,27 @@ class UserRoleSeeder extends Seeder
             ['code' => 'mng', 'name' => 'manager', 'description' => 'Manager'],
         ];
 
-        foreach($roles as $role) {
-            $roleU = Role::create([
-                'code' => $role['code'],
-                'name' => $role['name'],
-                'description' => $role['description'],
-            ]);
+        foreach ($rolesData as $role) {
+            Role::create($role);
         }
 
-        $roleAdmin = $roleU->where('code', 'adm')->first('id');
-        $roleWaitress = $roleU->where('code', 'wt')->first('id');
-        $roleChef = $roleU->where('code', 'chf')->first('id');
-        $roleCashier = $roleU->where('code', 'csh')->first('id');
-        $roleManager = $roleU->where('code', 'mng')->first('id');
+        $roleIds = Role::pluck('id', 'code');
 
-        // User
         $users = [
-            ['name' => 'admin', 'email' => 'admin@foa.id', 'password' => Hash::make('password'), 'role_id' => $roleAdmin],
+            ['name' => 'Admin User', 'username' => 'admin', 'email' => 'admin@foa.id', 'role_code' => 'adm'],
+            ['name' => 'Waitress User', 'username' => 'waitress', 'email' => 'waitress@foa.id', 'role_code' => 'wt'],
+            ['name' => 'Chef User', 'username' => 'chef', 'email' => 'chef@foa.id', 'role_code' => 'chf'],
+            ['name' => 'Cashier User', 'username' => 'cashier', 'email' => 'cashier@foa.id', 'role_code' => 'csh'],
+            ['name' => 'Manager User', 'username' => 'mngr', 'email' => 'manager@foa.id', 'role_code' => 'mng'],
         ];
 
-        foreach($roles as $role) {
-            Role::create([
-                'code' => $role['code'],
-                'name' => $role['name'],
-                'description' => $role['description'],
+        foreach ($users as $user) {
+            User::create([
+                'name' => $user['name'],
+                'username' => $user['username'],
+                'email' => $user['email'],
+                'password' => Hash::make('password'),
+                'role_id' => $roleIds[$user['role_code']],
             ]);
         }
     }
